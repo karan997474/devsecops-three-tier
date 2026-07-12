@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Secure Tasks</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 640px; margin: 4rem auto; padding: 0 1rem; color: #172033; }
+      form { display: flex; gap: .5rem; } input { flex: 1; padding: .65rem; } button { padding: .65rem 1rem; cursor: pointer; }
+      li { display: flex; justify-content: space-between; padding: .6rem; border-bottom: 1px solid #e5e7eb; }
+      .done { text-decoration: line-through; color: #64748b; } #error { color: #b91c1c; }
+    </style>
+  </head>
+  <body>
+    <h1>Secure Tasks</h1>
+    <p>Three-tier DevSecOps reference application</p>
+    <form id="task-form"><input id="title" aria-label="Task title" required maxlength="120" placeholder="Add deployment validation"><button>Add</button></form>
+    <p id="error" role="alert"></p>
+    <ul id="tasks"></ul>
+    <script src="app.js"></script>
+  </body>
+</html>
+

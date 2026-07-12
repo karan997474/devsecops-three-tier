@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: task-api
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/devsecops}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+

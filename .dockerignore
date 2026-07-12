@@ -1,0 +1,9 @@
+.git
+.github
+docs
+k8s
+Jenkinsfile
+README.md
+**/target
+**/node_modules
+

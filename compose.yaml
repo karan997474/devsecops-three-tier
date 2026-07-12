@@ -1,0 +1,36 @@
+services:
+  mongo:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_DATABASE: devsecops
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok", "localhost:27017/admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./api
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/devsecops
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mongo-data:

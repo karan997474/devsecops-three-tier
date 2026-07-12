@@ -96,7 +96,7 @@ Without this webhook, `waitForQualityGate` cannot receive the result reliably.
 1. Create a GitHub repository and push this source code.
 2. In Jenkins, create a **Pipeline from SCM** job that reads `Jenkinsfile` from the main branch.
 3. Add a GitHub webhook pointing to `https://YOUR_JENKINS_URL/github-webhook/` for push events.
-4. Change `REGISTRY` and `NEXUS_URL` at the top of `Jenkinsfile` to real values; do not put passwords there.
+4. For the first local run, leave `PUBLISH` and `DEPLOY` unchecked. Before enabling `PUBLISH`, change `REGISTRY` and `NEXUS_URL` at the top of `Jenkinsfile` to real values; do not put passwords there.
 5. Push a small README change and confirm that the job begins automatically.
 
 For a public portfolio project, use a Multibranch Pipeline. It demonstrates feature-branch checks and protects `main` with required Jenkins/Sonar status checks.

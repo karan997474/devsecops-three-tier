@@ -8,12 +8,14 @@ pipeline {
   }
 
   parameters {
+    booleanParam(name: 'PUBLISH', defaultValue: false, description: 'Publish artifacts to Nexus and images to a registry')
     booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy verified images to Kubernetes')
     choice(name: 'TARGET_ENV', choices: ['dev', 'staging'], description: 'Kubernetes namespace suffix')
   }
 
   environment {
-    REGISTRY = 'docker.io/REPLACE_WITH_YOUR_DOCKERHUB_USER'
+    // Replace before running with PUBLISH=true. This local value permits image builds and scans.
+    REGISTRY = 'devsecops'
     API_IMAGE = "${REGISTRY}/three-tier-api:${BUILD_NUMBER}"
     WEB_IMAGE = "${REGISTRY}/three-tier-web:${BUILD_NUMBER}"
     NEXUS_URL = 'https://nexus.example.com'
@@ -45,7 +47,9 @@ pipeline {
     stage('SonarQube analysis') {
       steps {
         withSonarQubeEnv('sonarqube') {
-          sh 'cd api && mvn -B sonar:sonar -Dsonar.projectBaseDir=..'
+          dir('api') {
+            sh 'mvn -B sonar:sonar -Dsonar.projectKey=secure-three-tier-demo -Dsonar.projectName="Secure Three-Tier Demo"'
+          }
         }
       }
     }
@@ -59,6 +63,7 @@ pipeline {
     }
 
     stage('Publish immutable JAR to Nexus') {
+      when { expression { return params.PUBLISH } }
       steps {
         withCredentials([usernamePassword(credentialsId: 'nexus-user-password', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
           sh '''
@@ -70,25 +75,31 @@ pipeline {
       }
     }
 
-    stage('Build, scan and push container images') {
+    stage('Build and scan container images') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub-user-password', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
-          sh '''
-            docker build --pull -t "$API_IMAGE" api
-            docker build --pull -t "$WEB_IMAGE" frontend
-            trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress "$API_IMAGE"
-            trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress "$WEB_IMAGE"
-            echo "$REGISTRY_PASSWORD" | docker login --username "$REGISTRY_USER" --password-stdin docker.io
-            docker push "$API_IMAGE"
-            docker push "$WEB_IMAGE"
-            docker logout docker.io
-          '''
+        sh '''
+          docker build --pull -t "$API_IMAGE" api
+          docker build --pull -t "$WEB_IMAGE" frontend
+          trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress "$API_IMAGE"
+          trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress "$WEB_IMAGE"
+        '''
+        script {
+          if (params.PUBLISH) {
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-user-password', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
+              sh '''
+                echo "$REGISTRY_PASSWORD" | docker login --username "$REGISTRY_USER" --password-stdin docker.io
+                docker push "$API_IMAGE"
+                docker push "$WEB_IMAGE"
+                docker logout docker.io
+              '''
+            }
+          }
         }
       }
     }
 
     stage('Deploy to Kubernetes') {
-      when { expression { return params.DEPLOY } }
+      when { expression { return params.PUBLISH && params.DEPLOY } }
       steps {
         withCredentials([
           file(credentialsId: 'eks-kubeconfig', variable: 'KUBECONFIG_FILE'),

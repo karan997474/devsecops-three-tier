@@ -106,7 +106,7 @@ For a public portfolio project, use a Multibranch Pipeline. It demonstrates feat
 | Stage | Why it is there | What proves success |
 | --- | --- | --- |
 | Checkout | Retrieves the exact Git revision | Jenkins shows commit SHA |
-| Trivy filesystem scan | Finds secrets, vulnerable dependencies, and IaC issues before a build | No HIGH/CRITICAL blocking findings |
+| Trivy filesystem scan | Finds exposed secrets and IaC issues before a build | No HIGH/CRITICAL blocking findings |
 | Maven test | Compiles the API and runs unit tests | JUnit report is published |
 | SonarQube + Quality Gate | Measures bugs, duplication, coverage, and code smells | Quality Gate is green |
 | Nexus publication | Stores the tested JAR independently of Jenkins workspace | Versioned JAR appears in Nexus |
@@ -137,7 +137,7 @@ Test a rollback by deploying a deliberately bad image tag, observing the failed 
 
 ## 8. Security decisions you should be able to explain
 
-- **Shift left:** Trivy scans source, secrets, dependencies, Dockerfiles, and Kubernetes YAML before an image is pushed.
+- **Shift left:** Trivy scans source secrets, Dockerfiles, and Kubernetes YAML before the build; it scans the completed container image for vulnerable packages before publication.
 - **Quality gate:** SonarQube prevents release after code-quality policy failures.
 - **Artifact traceability:** Jenkins build number connects Git commit, JAR in Nexus, container tag, and Kubernetes deployment.
 - **Secret handling:** Atlas URI stays in Jenkins credentials and a Kubernetes Secret. It is not in source code, image layers, console output, or a `.env` file committed to Git.

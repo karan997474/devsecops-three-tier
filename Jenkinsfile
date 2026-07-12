@@ -26,10 +26,10 @@ pipeline {
       steps { checkout scm }
     }
 
-    stage('Secret, dependency and IaC scan') {
+    stage('Secret and IaC scan') {
       steps {
         sh '''
-          trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL \
+          trivy fs --scanners secret,misconfig --severity HIGH,CRITICAL \
             --exit-code 1 --no-progress .
         '''
       }

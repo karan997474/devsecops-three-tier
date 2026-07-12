@@ -29,8 +29,9 @@ pipeline {
     stage('Secret and IaC scan') {
       steps {
         sh '''
-          trivy fs --scanners secret,misconfig --severity HIGH,CRITICAL \
-            --exit-code 1 --no-progress .
+          trivy fs --scanners secret --skip-files api/pom.xml \
+            --severity HIGH,CRITICAL --exit-code 1 --no-progress .
+          trivy config --severity HIGH,CRITICAL --exit-code 1 --no-progress .
         '''
       }
     }

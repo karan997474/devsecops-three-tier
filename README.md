@@ -28,6 +28,7 @@ The compose stack uses local MongoDB. Kubernetes uses a MongoDB Atlas connection
 | `frontend/` | Static browser UI and Nginx reverse proxy |
 | `api/` | Java 17 / Spring Boot / MongoDB REST API |
 | `k8s/` | Hardened Kubernetes manifests for EKS or any cluster |
+| `jenkins/` | Local Jenkins toolbox image for Maven, Docker, Trivy, and kubectl |
 | `Jenkinsfile` | Build, quality, security, artifact, image, and deployment pipeline |
 | `docs/` | Setup guide, validation evidence, resume and interview notes |
 
@@ -41,4 +42,3 @@ The compose stack uses local MongoDB. Kubernetes uses a MongoDB Atlas connection
 ## Evidence to save for your portfolio
 
 Save a successful Jenkins stage view, SonarQube Quality Gate, Trivy report, Nexus artifact version, `kubectl rollout status` output, and a screenshot of the deployed application. The checklist is in [docs/validation-checklist.md](docs/validation-checklist.md).
-

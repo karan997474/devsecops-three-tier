@@ -31,7 +31,7 @@ pipeline {
         sh '''
           trivy fs --scanners secret --skip-files api/pom.xml \
             --severity HIGH,CRITICAL --exit-code 1 --no-progress .
-          trivy config --severity HIGH,CRITICAL --exit-code 1 --no-progress .
+          trivy config --severity HIGH,CRITICAL --exit-code 1 .
         '''
       }
     }

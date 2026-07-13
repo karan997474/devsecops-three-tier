@@ -79,6 +79,12 @@ pipeline {
     stage('Build and scan container images') {
       steps {
         sh '''
+          # The local Jenkins controller reaches Docker Desktop through the
+          # bind-mounted Unix socket. Clear stale remote-Docker settings so a
+          # restarted Docker Desktop instance cannot redirect this build to
+          # the nonexistent docker:2376 host.
+          unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH
+          export DOCKER_HOST=unix:///var/run/docker.sock
           docker build --pull -t "$API_IMAGE" api
           docker build --pull -t "$WEB_IMAGE" frontend
           trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress "$API_IMAGE"
@@ -88,6 +94,8 @@ pipeline {
           if (params.PUBLISH) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub-user-password', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
               sh '''
+                unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH
+                export DOCKER_HOST=unix:///var/run/docker.sock
                 echo "$REGISTRY_PASSWORD" | docker login --username "$REGISTRY_USER" --password-stdin docker.io
                 docker push "$API_IMAGE"
                 docker push "$WEB_IMAGE"

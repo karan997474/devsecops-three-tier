@@ -19,7 +19,11 @@ The repository is deliberately small so that the delivery system—not applicati
 3. Open `http://localhost:8081`, add a task, and confirm it persists after a browser refresh.
 4. Run `docker compose down` when finished. Use `docker compose down -v` to remove local MongoDB data.
 
-The compose stack uses local MongoDB. Kubernetes uses a MongoDB Atlas connection string supplied at deployment time; never commit that value.
+The compose stack uses local MongoDB. Production Kubernetes/EKS uses a MongoDB Atlas connection string supplied at deployment time; never commit that value.
+
+## Local Kubernetes option
+
+For a Docker Desktop learning cluster, apply [`k8s/local-mongodb.yaml`](k8s/local-mongodb.yaml) and set `app-secrets` to `mongodb://mongodb:27017/devsecops`. This creates a disposable, cluster-internal MongoDB instance so you can validate the Kubernetes workload without cloud-database credentials. It is deliberately separate from the Atlas/EKS deployment path in the Jenkinsfile.
 
 ## Repository map
 

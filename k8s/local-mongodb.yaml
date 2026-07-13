@@ -61,15 +61,20 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
+            readOnlyRootFilesystem: true
             runAsGroup: 999
             runAsNonRoot: true
             runAsUser: 999
           volumeMounts:
             - name: data
               mountPath: /data/db
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: data
           # Intentional: this database is disposable local-development data.
+          emptyDir: {}
+        - name: tmp
           emptyDir: {}
 ---
 apiVersion: v1

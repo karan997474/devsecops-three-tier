@@ -10,7 +10,7 @@ Browser -> Nginx frontend -> Spring Boot API -> MongoDB Atlas
 GitHub -> Jenkins -> tests -> SonarQube -> Nexus -> Docker/Trivy -> EKS
 ```
 
-The repository is deliberately small so that the delivery system—not application complexity—is the focus. It supports local Docker Compose development and an EKS/Kubernetes deployment. See [docs/implementation-guide.md](docs/implementation-guide.md) for the exact build order, prerequisites, Jenkins configuration, and troubleshooting.
+The repository is deliberately small so that the delivery system—not application complexity—is the focus. It supports local Docker Compose development and an EKS/Kubernetes deployment. See [docs/implementation-guide.md](docs/implementation-guide.md) for the exact build order, prerequisites, Jenkins configuration, and troubleshooting. For beginner-friendly project and interview notes, see [docs/project-notes-simple.md](docs/project-notes-simple.md).
 
 ## Quick start (local)
 
